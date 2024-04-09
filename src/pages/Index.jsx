@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Heading, FormControl, FormLabel, Select, Input, Button, Text, VStack, useToast, Checkbox } from "@chakra-ui/react";
+import { Box, Heading, FormControl, FormLabel, Select, Input, Button, Text, VStack, useToast, Checkbox, HStack } from "@chakra-ui/react";
 
 const costs = {
   A: { costPerKm: 18.82, baseCost: 528.69 },
@@ -18,6 +18,7 @@ const Index = () => {
   const [distance, setDistance] = useState("");
   const [totalCost, setTotalCost] = useState(null);
   const [includeIVA, setIncludeIVA] = useState(false);
+  const [dieselCost, setDieselCost] = useState("");
   const toast = useToast();
 
   const handleSubmit = (e) => {
@@ -32,13 +33,19 @@ const Index = () => {
       });
       return;
     }
-    let cost = calculateCost(craneType, parseFloat(distance));
+    let baseCost = calculateCost(craneType, parseFloat(distance));
+    let totalCost = baseCost;
+
+    if (dieselCost) {
+      totalCost += parseFloat(dieselCost);
+    }
+
     if (includeIVA) {
-      const iva = cost * 0.16;
-      const totalWithIVA = cost + iva;
-      setTotalCost({ baseCost: cost.toFixed(2), iva: iva.toFixed(2), totalWithIVA: totalWithIVA.toFixed(2) });
+      const iva = baseCost * 0.16;
+      const totalWithIVA = totalCost + iva;
+      setTotalCost({ baseCost: baseCost.toFixed(2), iva: iva.toFixed(2), totalWithIVA: totalWithIVA.toFixed(2), dieselCost: dieselCost });
     } else {
-      setTotalCost({ baseCost: cost.toFixed(2) });
+      setTotalCost({ baseCost: baseCost.toFixed(2), totalCost: totalCost.toFixed(2), dieselCost: dieselCost });
     }
   };
 
@@ -62,6 +69,10 @@ const Index = () => {
             <FormLabel>Enter Distance (km)</FormLabel>
             <Input type="number" placeholder="Enter distance" value={distance} onChange={(e) => setDistance(e.target.value)} />
           </FormControl>
+          <FormControl id="dieselCost">
+            <FormLabel>Enter Diesel Cost</FormLabel>
+            <Input type="number" placeholder="Enter diesel cost" value={dieselCost} onChange={(e) => setDieselCost(e.target.value)} />
+          </FormControl>
           <FormControl>
             <Checkbox isChecked={includeIVA} onChange={(e) => setIncludeIVA(e.target.checked)}>
               Include IVA (16%)
@@ -75,9 +86,26 @@ const Index = () => {
       {totalCost && (
         <Box mt={8} textAlign="center">
           <Text fontSize="2xl">Base Cost:</Text>
-          <Text fontSize="4xl" fontWeight="bold">
-            ${totalCost.baseCost}
-          </Text>
+          <HStack>
+            <Text fontSize="2xl">Base Cost:</Text>
+            <Text fontSize="2xl" fontWeight="bold">
+              ${totalCost.baseCost}
+            </Text>
+          </HStack>
+          {totalCost.dieselCost && (
+            <HStack>
+              <Text fontSize="2xl">Diesel Cost:</Text>
+              <Text fontSize="2xl" fontWeight="bold">
+                ${totalCost.dieselCost}
+              </Text>
+            </HStack>
+          )}
+          <HStack>
+            <Text fontSize="2xl">Total Cost:</Text>
+            <Text fontSize="2xl" fontWeight="bold">
+              ${totalCost.totalCost}
+            </Text>
+          </HStack>
           {includeIVA && (
             <>
               <Text fontSize="2xl" mt={4}>
