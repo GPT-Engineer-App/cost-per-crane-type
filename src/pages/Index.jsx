@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Heading, FormControl, FormLabel, Select, Input, Button, Text, VStack, useToast } from "@chakra-ui/react";
+import { Box, Heading, FormControl, FormLabel, Select, Input, Button, Text, VStack, useToast, Checkbox } from "@chakra-ui/react";
 
 const costs = {
   A: { costPerKm: 18.82, baseCost: 528.69 },
@@ -17,6 +17,7 @@ const Index = () => {
   const [craneType, setCraneType] = useState("");
   const [distance, setDistance] = useState("");
   const [totalCost, setTotalCost] = useState(null);
+  const [includeIVA, setIncludeIVA] = useState(false);
   const toast = useToast();
 
   const handleSubmit = (e) => {
@@ -31,8 +32,14 @@ const Index = () => {
       });
       return;
     }
-    const cost = calculateCost(craneType, parseFloat(distance));
-    setTotalCost(cost.toFixed(2));
+    let cost = calculateCost(craneType, parseFloat(distance));
+    if (includeIVA) {
+      const iva = cost * 0.16;
+      const totalWithIVA = cost + iva;
+      setTotalCost({ baseCost: cost.toFixed(2), iva: iva.toFixed(2), totalWithIVA: totalWithIVA.toFixed(2) });
+    } else {
+      setTotalCost({ baseCost: cost.toFixed(2) });
+    }
   };
 
   return (
@@ -55,6 +62,11 @@ const Index = () => {
             <FormLabel>Enter Distance (km)</FormLabel>
             <Input type="number" placeholder="Enter distance" value={distance} onChange={(e) => setDistance(e.target.value)} />
           </FormControl>
+          <FormControl>
+            <Checkbox isChecked={includeIVA} onChange={(e) => setIncludeIVA(e.target.checked)}>
+              Include IVA (16%)
+            </Checkbox>
+          </FormControl>
           <Button type="submit" colorScheme="blue" width="100%">
             Calculate Cost
           </Button>
@@ -62,10 +74,26 @@ const Index = () => {
       </form>
       {totalCost && (
         <Box mt={8} textAlign="center">
-          <Text fontSize="2xl">Total Cost:</Text>
+          <Text fontSize="2xl">Base Cost:</Text>
           <Text fontSize="4xl" fontWeight="bold">
-            ${totalCost}
+            ${totalCost.baseCost}
           </Text>
+          {includeIVA && (
+            <>
+              <Text fontSize="2xl" mt={4}>
+                IVA (16%):
+              </Text>
+              <Text fontSize="4xl" fontWeight="bold">
+                ${totalCost.iva}
+              </Text>
+              <Text fontSize="2xl" mt={4}>
+                Total with IVA:
+              </Text>
+              <Text fontSize="4xl" fontWeight="bold">
+                ${totalCost.totalWithIVA}
+              </Text>
+            </>
+          )}
         </Box>
       )}
     </Box>
