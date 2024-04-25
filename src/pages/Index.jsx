@@ -38,10 +38,10 @@ const Index = () => {
 
     if (includeIVA) {
       const iva = baseCost * 0.16;
-      const totalWithIVA = totalCost + iva;
-      setTotalCost({ baseCost: baseCost.toFixed(2), iva: iva.toFixed(2), totalWithIVA: totalWithIVA.toFixed(2), dieselCost: dieselCost });
+      totalCost += iva;
+      setTotalCost({ baseCost: baseCost.toFixed(2), iva: iva.toFixed(2), totalCost: totalCost.toFixed(2), dieselCost: dieselCost });
     } else {
-      setTotalCost({ baseCost: baseCost.toFixed(2), totalCost: totalCost.toFixed(2), dieselCost: dieselCost });
+      setTotalCost({ baseCost: baseCost.toFixed(2), totalCost: baseCost.toFixed(2), dieselCost: dieselCost });
     }
   };
 
