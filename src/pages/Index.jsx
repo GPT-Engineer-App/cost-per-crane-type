@@ -36,10 +36,6 @@ const Index = () => {
     let baseCost = calculateCost(craneType, parseFloat(distance));
     let totalCost = baseCost;
 
-    if (dieselCost) {
-      totalCost += parseFloat(dieselCost);
-    }
-
     if (includeIVA) {
       const iva = baseCost * 0.16;
       const totalWithIVA = totalCost + iva;
@@ -69,10 +65,7 @@ const Index = () => {
             <FormLabel>Enter Distance (km)</FormLabel>
             <Input type="number" placeholder="Enter distance" value={distance} onChange={(e) => setDistance(e.target.value)} />
           </FormControl>
-          <FormControl id="dieselCost">
-            <FormLabel>Enter Diesel Cost</FormLabel>
-            <Input type="number" placeholder="Enter diesel cost" value={dieselCost} onChange={(e) => setDieselCost(e.target.value)} />
-          </FormControl>
+
           <FormControl>
             <Checkbox isChecked={includeIVA} onChange={(e) => setIncludeIVA(e.target.checked)}>
               Include IVA (16%)
